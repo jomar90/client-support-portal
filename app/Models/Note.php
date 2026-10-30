@@ -7,13 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-
 #[Fillable([
     'body',
 ])]
 class Note extends Model
 {
     use HasFactory;
+
     /**
      * Get the ticket that the note belongs to.
      */

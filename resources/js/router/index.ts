@@ -1,116 +1,45 @@
-import {
-    createRouter,
-    createWebHistory,
-} from 'vue-router';
-
-import { authStore } from '../stores/authStore';
-import LoginView from '../views/LoginView.vue';
-import TicketOverviewView from '../views/TicketOverviewView.vue';
-import ForgotPasswordView from '../views/ForgotPasswordView.vue';
-import TicketCreateView from '../views/TicketCreateView.vue';
-import TicketEditView from '../views/TicketEditView.vue';
-import TicketDetailView from '../views/TicketDetailView.vue';
-import CategoryOverviewView from '../views/CategoryOverviewView.vue';
-
-import CategoryCreateView from '../views/CategoryCreateView.vue';
-
+import { createRouter, createWebHistory } from 'vue-router';
+import { authRoutes } from '../domains/auth/routes';
+import { ticketRoutes } from '../domains/tickets/routes';
+import { categoryRoutes } from '../domains/categories/routes';
+import { userRoutes } from '../domains/users/routes';
+import { authStore } from '../domains/auth/store';
+import { clearErrors } from '../services/error';
 
 const router = createRouter({
     history: createWebHistory(),
     routes: [
-        {
-            path: '/',
-            redirect: '/tickets',
-        },
-        {
-            path: '/login',
-            name: 'login',
-            component: LoginView,
-        },
-        {
-            path: '/tickets',
-            name: 'tickets.index',
-            component: TicketOverviewView,
-            meta: {
-                requiresAuth: true,
-            },
-        },
-        {
-            path: '/forgot-password',
-            name: 'password.forgot',
-            component: ForgotPasswordView,
-        },
-        {
-            path: '/tickets/create',
-            name: 'tickets.create',
-            component: TicketCreateView,
-            meta: { requiresAuth: true },
-        },
-        {
-            path: '/tickets/:id/edit',
-            name: 'tickets.edit',
-            component: TicketEditView,
-            meta: { requiresAuth: true },
-        },
-        {
-            path: '/tickets/:id',
-            name: 'tickets.show',
-            component: TicketDetailView,
-            meta: { requiresAuth: true },
-        },
-        {
-            path: '/categories',
-            name: 'categories.index',
-            component: CategoryOverviewView,
-            meta: {
-                requiresAuth: true,
-                requiresAdmin: true,
-            },
-        },
-        {
-            path: '/categories/create',
-            name: 'categories.create',
-            component: CategoryCreateView,
-            meta: {
-                requiresAuth: true,
-                requiresAdmin: true,
-            },
-        },
+        ...authRoutes,
+        ...ticketRoutes,
+        ...categoryRoutes,
+        ...userRoutes,
+        { path: '/:pathMatch(.*)*', redirect: '/tickets' },
     ],
 });
 
-router.beforeEach(async (to) => {
-    if (!authStore.state.initialized) {
-        await authStore.actions.fetchUser();
+router.beforeEach(async to => {
+    clearErrors();
+
+    try {
+        await authStore.actions.getUser();
+    } catch {
+        // Keep the current page and display the HTTP service's error message.
+        return false;
     }
 
-    if (
-        to.meta.requiresAuth
-        && !authStore.getters.isAuthenticated.value
-    ) {
-        return {
-            name: 'login',
-        };
+    const user = authStore.getters.user.value;
+
+    if (!to.meta.guest && !user) {
+        return { name: 'auth.login' };
     }
 
-    if (
-        to.name === 'login'
-        && authStore.getters.isAuthenticated.value
-    ) {
-        return {
-            name: 'tickets.index',
-        };
+    if (to.meta.guest && user) {
+        return { name: 'tickets.overview' };
     }
-    if (
-        to.meta.requiresAdmin
-        && !authStore.state.user?.admin
-    ) {
-        return {
-            name: 'tickets.index',
-        };
+
+    if (to.meta.admin && !user?.admin) {
+        return { name: 'tickets.overview' };
     }
 });
-
-
 
 export default router;

@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1190" viewBox="0 0 1500 1190" role="img" aria-labelledby="title desc">
+<title id="title">Client Support Portal database relationships</title>
+<desc id="desc">Users create tickets and author responses. Tickets optionally belong to an assigned administrator. Categories join tickets through category_ticket. Administrators author internal notes on tickets. Password reset tokens, sessions and Sanctum token tables support authentication.</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="#49627d"/></marker></defs>
+<rect width="1500" height="1190" fill="#f5f7fa"/>
+<g font-family="Arial,sans-serif" fill="#243144">
+<text x="30" y="36" font-size="26" font-weight="bold">Client Support Portal — database diagram</text>
+<text x="30" y="61" font-size="15">Schema unchanged • solid arrows: foreign keys toward parent • PK: primary key • NULL: optional</text>
+<path d="M560 145 L390 145" fill="none" stroke="#49627d" stroke-width="2" marker-end="url(#arrow)"/><text x="398" y="130" font-size="13">creator: many → one</text>
+<path d="M560 215 L390 215" fill="none" stroke="#49627d" stroke-width="2" marker-end="url(#arrow)"/><text x="395" y="239" font-size="13">assignee: many → 0..1</text>
+<path d="M180 490 L180 333" fill="none" stroke="#49627d" stroke-width="2" marker-end="url(#arrow)"/><text x="35" y="400" font-size="13">author: many → one</text>
+<path d="M390 535 L470 535 L470 365 L670 365 L670 283" fill="none" stroke="#49627d" stroke-width="2" marker-end="url(#arrow)"/><text x="475" y="385" font-size="13">ticket: many → one</text>
+<path d="M745 490 L745 283" fill="none" stroke="#49627d" stroke-width="2" marker-end="url(#arrow)"/><text x="755" y="425" font-size="13">ticket: many → one</text>
+<path d="M560 600 L420 600 L420 440 L300 440 L300 333" fill="none" stroke="#49627d" stroke-width="2" marker-end="url(#arrow)"/><text x="435" y="465" font-size="13">author: many → one</text>
+<path d="M1110 535 L1010 535 L1010 335 L850 335 L850 283" fill="none" stroke="#49627d" stroke-width="2" marker-end="url(#arrow)"/><text x="950" y="385" font-size="13">ticket: many → one</text>
+<path d="M1270 490 L1270 208" fill="none" stroke="#49627d" stroke-width="2" marker-end="url(#arrow)"/><text x="1120" y="360" font-size="13">category: many → one</text>
+<rect x="30" y="85" width="360" height="248" rx="5" fill="white" stroke="#8795a8"/>
+<rect x="30" y="85" width="360" height="36" rx="5" fill="#285682"/>
+<text x="43" y="109" font-size="17" font-weight="bold" fill="white">USERS</text>
+<text x="43" y="146" font-size="15">id PK</text>
+<text x="43" y="171" font-size="15">first_name, last_name</text>
+<text x="43" y="196" font-size="15">email UNIQUE</text>
+<text x="43" y="221" font-size="15">phone_number NULL</text>
+<text x="43" y="246" font-size="15">email_verified_at NULL</text>
+<text x="43" y="271" font-size="15">password, remember_token NULL</text>
+<text x="43" y="296" font-size="15">admin DEFAULT false</text>
+<text x="43" y="321" font-size="15">created_at, updated_at</text>
+<rect x="560" y="85" width="370" height="198" rx="5" fill="white" stroke="#8795a8"/>
+<rect x="560" y="85" width="370" height="36" rx="5" fill="#285682"/>
+<text x="573" y="109" font-size="17" font-weight="bold" fill="white">TICKETS</text>
+<text x="573" y="146" font-size="15">id PK</text>
+<text x="573" y="171" font-size="15">user_id FK → users.id</text>
+<text x="573" y="196" font-size="15">assigned_to FK → users.id NULL</text>
+<text x="573" y="221" font-size="15">title, description</text>
+<text x="573" y="246" font-size="15">status DEFAULT pending</text>
+<text x="573" y="271" font-size="15">created_at, updated_at</text>
+<rect x="1110" y="85" width="330" height="123" rx="5" fill="white" stroke="#8795a8"/>
+<rect x="1110" y="85" width="330" height="36" rx="5" fill="#285682"/>
+<text x="1123" y="109" font-size="17" font-weight="bold" fill="white">CATEGORIES</text>
+<text x="1123" y="146" font-size="15">id PK</text>
+<text x="1123" y="171" font-size="15">title UNIQUE</text>
+<text x="1123" y="196" font-size="15">created_at, updated_at</text>
+<rect x="30" y="490" width="360" height="173" rx="5" fill="white" stroke="#8795a8"/>
+<rect x="30" y="490" width="360" height="36" rx="5" fill="#285682"/>
+<text x="43" y="514" font-size="17" font-weight="bold" fill="white">RESPONSES</text>
+<text x="43" y="551" font-size="15">id PK</text>
+<text x="43" y="576" font-size="15">ticket_id FK → tickets.id</text>
+<text x="43" y="601" font-size="15">user_id FK → users.id</text>
+<text x="43" y="626" font-size="15">body</text>
+<text x="43" y="651" font-size="15">created_at, updated_at</text>
+<rect x="560" y="490" width="370" height="198" rx="5" fill="white" stroke="#8795a8"/>
+<rect x="560" y="490" width="370" height="36" rx="5" fill="#735b28"/>
+<text x="573" y="514" font-size="17" font-weight="bold" fill="white">NOTES — internal</text>
+<text x="573" y="551" font-size="15">id PK</text>
+<text x="573" y="576" font-size="15">ticket_id FK → tickets.id</text>
+<text x="573" y="601" font-size="15">user_id FK → users.id</text>
+<text x="573" y="626" font-size="15">body</text>
+<text x="573" y="651" font-size="15">created_at, updated_at</text>
+<text x="573" y="676" font-size="15">No UI or API in this version</text>
+<rect x="1110" y="490" width="330" height="123" rx="5" fill="white" stroke="#8795a8"/>
+<rect x="1110" y="490" width="330" height="36" rx="5" fill="#285682"/>
+<text x="1123" y="514" font-size="17" font-weight="bold" fill="white">CATEGORY_TICKET</text>
+<text x="1123" y="551" font-size="15">ticket_id PK, FK → tickets.id</text>
+<text x="1123" y="576" font-size="15">category_id PK, FK → categories.id</text>
+<text x="1123" y="601" font-size="15">Composite primary key</text>
+<rect x="30" y="835" width="440" height="123" rx="5" fill="white" stroke="#8795a8"/>
+<rect x="30" y="835" width="440" height="36" rx="5" fill="#285682"/>
+<text x="43" y="859" font-size="17" font-weight="bold" fill="white">PASSWORD_RESET_TOKENS</text>
+<text x="43" y="896" font-size="15">email PK (logical user lookup, no FK)</text>
+<text x="43" y="921" font-size="15">token (hashed)</text>
+<text x="43" y="946" font-size="15">created_at NULL</text>
+<rect x="540" y="835" width="440" height="148" rx="5" fill="white" stroke="#8795a8"/>
+<rect x="540" y="835" width="440" height="36" rx="5" fill="#285682"/>
+<text x="553" y="859" font-size="17" font-weight="bold" fill="white">SESSIONS</text>
+<text x="553" y="896" font-size="15">id PK</text>
+<text x="553" y="921" font-size="15">user_id NULL indexed (no FK)</text>
+<text x="553" y="946" font-size="15">ip_address NULL, user_agent NULL</text>
+<text x="553" y="971" font-size="15">payload, last_activity indexed</text>
+<rect x="1050" y="835" width="400" height="173" rx="5" fill="white" stroke="#8795a8"/>
+<rect x="1050" y="835" width="400" height="36" rx="5" fill="#285682"/>
+<text x="1063" y="859" font-size="17" font-weight="bold" fill="white">PERSONAL_ACCESS_TOKENS</text>
+<text x="1063" y="896" font-size="15">id PK, name, token UNIQUE</text>
+<text x="1063" y="921" font-size="15">tokenable_type + tokenable_id indexed</text>
+<text x="1063" y="946" font-size="15">abilities, last_used_at, expires_at NULL</text>
+<text x="1063" y="971" font-size="15">created_at, updated_at</text>
+<text x="1063" y="996" font-size="15">Retained; SPA uses session cookies</text>
+<text x="30" y="797" font-size="19" font-weight="bold">Authentication infrastructure — no declared foreign keys to domain tables</text>
+<text x="30" y="1115" font-size="15">Also retained: cache, cache_locks, jobs, job_batches, failed_jobs (independent framework tables).</text>
+<text x="30" y="1144" font-size="15">Category deletion RESTRICT; ticket children CASCADE; deleted assignee SET NULL. Admin roles/status values are enforced by Laravel.</text>
+<text x="30" y="1173" font-size="15">Notes are administrator-only. User deletion requires no unresolved owned or assigned tickets.</text>
+</g></svg>

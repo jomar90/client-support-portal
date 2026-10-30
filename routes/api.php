@@ -1,13 +1,13 @@
 <?php
 
+use App\Http\Controllers\AdministratorController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\NoteController;
+use App\Http\Controllers\ResponseController;
+use App\Http\Controllers\TicketController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TicketController;
-use App\Http\Controllers\CategoryController;
-
-use App\Http\Controllers\ResponseController;
-
-
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -35,27 +35,12 @@ Route::middleware('auth:sanctum')->patch(
 
 Route::middleware('auth:sanctum')->get(
     '/administrators',
-    [TicketController::class, 'administrators']
-);
-
-Route::middleware('auth:sanctum')->patch(
-    '/tickets/{ticket}/assignment',
-    [TicketController::class, 'assign']
-);
-
-Route::middleware('auth:sanctum')->patch(
-    '/tickets/{ticket}/status',
-    [TicketController::class, 'updateStatus']
+    [AdministratorController::class, 'index']
 );
 
 Route::middleware('auth:sanctum')->get(
     '/categories',
     [CategoryController::class, 'index']
-);
-
-Route::middleware('auth:sanctum')->get(
-    '/ticket-categories',
-    [CategoryController::class, 'selectable']
 );
 
 Route::middleware('auth:sanctum')->post(
@@ -77,3 +62,14 @@ Route::middleware('auth:sanctum')->patch(
     '/tickets/{ticket}/responses/{response}',
     [ResponseController::class, 'update']
 );
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/tickets/{ticket}/notes', [NoteController::class, 'store']);
+    Route::patch('/tickets/{ticket}/notes/{note}', [NoteController::class, 'update']);
+    Route::delete('/tickets/{ticket}/notes/{note}', [NoteController::class, 'destroy']);
+
+    Route::get('/users', [UserController::class, 'index']);
+    Route::get('/users/{user}', [UserController::class, 'show']);
+    Route::patch('/users/{user}', [UserController::class, 'update']);
+    Route::delete('/users/{user}', [UserController::class, 'destroy']);
+});

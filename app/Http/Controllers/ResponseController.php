@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreResponseRequest;
+use App\Http\Requests\UpdateResponseRequest;
+use App\Mail\TicketResponseCreated;
+use App\Models\Response;
 use App\Models\Ticket;
 use Illuminate\Http\JsonResponse;
-use App\Mail\TicketResponseCreated;
 use Illuminate\Support\Facades\Mail;
-use App\Http\Requests\UpdateResponseRequest;
-use App\Models\Response;
-
-
 
 class ResponseController extends Controller
 {
@@ -35,7 +33,6 @@ class ResponseController extends Controller
 
         return response()->json($response, 201);
     }
-
 
     public function update(
         UpdateResponseRequest $request,

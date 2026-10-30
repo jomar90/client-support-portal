@@ -66,7 +66,7 @@ class TicketWorkflowTest extends TestCase
 
         $this->actingAs($user)
             ->getJson('/api/categories')
-            ->assertForbidden();
+            ->assertOk();
 
         $this->postJson('/api/categories', ['title' => 'Billing'])
             ->assertForbidden();

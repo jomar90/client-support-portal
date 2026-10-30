@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 #[Fillable([
     'body',
@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Response extends Model
 {
     use HasFactory;
+
     /**
      * Get the ticket that the response belongs to.
      */

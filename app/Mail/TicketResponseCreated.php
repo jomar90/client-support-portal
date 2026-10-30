@@ -18,7 +18,7 @@ class TicketResponseCreated extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New response to ticket #' . $this->ticket->id,
+            subject: 'New response to ticket #'.$this->ticket->id,
         );
     }
 

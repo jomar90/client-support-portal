@@ -2,28 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-use App\Http\Requests\StoreCategoryRequest;
-
-
 class CategoryController extends Controller
 {
-    public function index(Request $request): JsonResponse
-    {
-        abort_unless($request->user()->admin, 403);
-
-        $categories = Category::query()
-            ->orderBy('title')
-            ->orderBy('id')
-            ->get(['id', 'title']);
-
-        return response()->json($categories);
-    }
-
-    public function selectable(): JsonResponse
+    public function index(): JsonResponse
     {
         $categories = Category::query()
             ->orderBy('title')
@@ -35,7 +21,7 @@ class CategoryController extends Controller
 
     public function store(StoreCategoryRequest $request): JsonResponse
     {
-        $category = new Category();
+        $category = new Category;
 
         $category->title = $request->validated('title');
         $category->save();

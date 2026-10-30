@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\Note;
 use App\Models\Response;
 use App\Models\Ticket;
 use App\Models\User;
@@ -21,6 +22,15 @@ class DatabaseSeeder extends Seeder
             'last_name' => 'User',
             'email' => 'admin@example.com',
             'phone_number' => '0612345678',
+            'admin' => true,
+        ]);
+
+        // A second administrator, so tickets can be assigned to another administrator.
+        User::factory()->create([
+            'first_name' => 'Second',
+            'last_name' => 'Admin',
+            'email' => 'admin2@example.com',
+            'phone_number' => '0611223344',
             'admin' => true,
         ]);
 
@@ -79,6 +89,10 @@ class DatabaseSeeder extends Seeder
 
         Response::factory()->for($email, 'ticket')->for($admin, 'user')->create([
             'body' => 'The email address has been updated. Please log in again.',
+        ]);
+
+        Note::factory()->for($login, 'ticket')->for($admin, 'user')->create([
+            'body' => 'Check the password reset logs before contacting the customer.',
         ]);
     }
 }

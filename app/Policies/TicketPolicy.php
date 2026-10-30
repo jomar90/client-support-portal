@@ -16,14 +16,4 @@ class TicketPolicy
     {
         return $this->view($user, $ticket);
     }
-
-    public function assign(User $user, Ticket $ticket): bool
-    {
-        return $user->admin;
-    }
-
-    public function changeStatus(User $user, Ticket $ticket): bool
-    {
-        return $user->admin;
-    }
 }
