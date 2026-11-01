@@ -61,3 +61,66 @@ jobs:
 
       - name: Build frontend
         run: npm run build
+
+
+  delivery:
+    name: Package Application
+    needs: [laravel-tests, vue-build]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, xml, dom, fileinfo, pdo_sqlite, sqlite3, pdo_mysql
+          coverage: none
+          tools: composer:v2
+
+      - name: Install production PHP dependencies
+        run: composer install --no-dev --no-interaction --prefer-dist --no-progress --optimize-autoloader
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build production frontend
+        run: npm run build
+
+      - name: Create release package
+        run: |
+          test -f vendor/autoload.php
+          test -f public/build/manifest.json
+
+          mkdir -p release/database release/resources
+          mkdir -p release/storage/app/public
+          mkdir -p release/storage/framework/cache/data
+          mkdir -p release/storage/framework/sessions
+          mkdir -p release/storage/framework/views
+          mkdir -p release/storage/logs
+
+          cp -R app bootstrap config public routes vendor release/
+          cp -R database/factories database/migrations database/seeders release/database/
+          cp -R resources/views release/resources/
+          cp artisan composer.json composer.lock release/
+
+          rm -f release/public/hot
+          rm -rf release/public/storage
+
+          tar -czf client-support-portal-release.tar.gz -C release .
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-support-portal-${{ github.sha }}
+          path: client-support-portal-release.tar.gz
+          retention-days: 14
+          if-no-files-found: error
